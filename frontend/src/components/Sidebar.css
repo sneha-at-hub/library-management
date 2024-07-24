@@ -6,6 +6,7 @@
     top: 0;
     left: 0;
     background: #343a40; /* Dark background for a modern look */
+    color: black;
 
     transition: all 0.3s;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
@@ -26,7 +27,7 @@
     padding: 10px 20px; /* Slightly increased padding */
     display: flex;
     align-items: center;
-    color: #ffffff; /* White text */
+    color: #040303; /* White text */
     text-decoration: none; /* Remove underlines */
     border-radius: 4px; /* Rounded corners */
     transition: background 0.3s, color 0.3s; /* Smooth transition */

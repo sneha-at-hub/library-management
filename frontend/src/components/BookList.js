@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './BookList.css'; // Custom CSS for additional styling
-import Sidebar from './Sidebar';
 import { Modal, Button, Form } from 'react-bootstrap';
+import Sidebar from './Sidebar';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+
+import AddBook from './AddBook';
 
 const BookList = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [currentBook, setCurrentBook] = useState(null);
+    const [authors, setAuthors] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [publishers, setPublishers] = useState([]);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -23,8 +29,33 @@ const BookList = () => {
             }
         };
 
+        const fetchOptions = async () => {
+            try {
+                const [authorsRes, categoriesRes, publishersRes] = await Promise.all([
+                    axios.get('http://localhost:8000/api/authors/'),
+                    axios.get('http://localhost:8000/api/category/'),
+                    axios.get('http://localhost:8000/api/publisher/')
+                ]);
+                setAuthors(authorsRes.data);
+                setCategories(categoriesRes.data);
+                setPublishers(publishersRes.data);
+            } catch (err) {
+                setError(err);
+            }
+        };
+
         fetchBooks();
+        fetchOptions();
     }, []);
+
+    const refreshBooks = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/books/');
+            setBooks(response.data);
+        } catch (err) {
+            setError(err);
+        }
+    };
 
     const handleDelete = async (book_id) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
@@ -67,10 +98,13 @@ const BookList = () => {
     return (
         <>
             <Sidebar />
-            <div className="container my-5" style={{ marginLeft: '300px', marginRight: 'auto', maxWidth: '1000px' }}>
+            <div className="container my-5" style={{ marginLeft: '250px', marginRight: 'auto', maxWidth: '1190px' }}>
                 <h2 className="text-center mb-4">Book List</h2>
-                <div className="table-responsive">
-                    <table className="table table-striped table-bordered">
+                <Button variant="primary" onClick={() => setShowAddModal(true)}>
+                    Add New Book
+                </Button>
+                <div className="table-responsive mt-4">
+                    <table className="table  ">
                         <thead className="thead-dark">
                             <tr>
                                 <th scope="col">Title</th>
@@ -83,6 +117,7 @@ const BookList = () => {
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
+                        
                         <tbody>
                             {books.map((book) => (
                                 <tr key={book.book_id}>
@@ -94,9 +129,14 @@ const BookList = () => {
                                     <td>{book.isbn}</td>
                                     <td>{book.copies_available}</td>
                                     <td>
-                                        <button className="btn btn-info btn-sm mr-2">Details</button>
-                                        <button className="btn btn-warning btn-sm mr-2" onClick={() => handleEdit(book)}>Edit</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(book.book_id)}>Delete</button>
+                                    <button className="btn btn-info btn-sm" style={{ marginRight: '10px' , backgroundColor:'#007bff', color:'white', borderColor:'lightgray' }}>Details</button>
+                                    <button className="btn btn-warning btn-sm" style={{ marginRight: '10px', padding:'0 5px 5px 5px' }} onClick={() => handleEdit(book)}>
+                                        <FaEdit style={{ }} /> 
+                                    </button>
+                                    <button className="btn btn-danger btn-sm" style = {{padding:'0 0px 5px 5px', backgroundColor:'white', borderColor:'lightgray'}} onClick={() => handleDelete(book.book_id)}>
+                                        <FaTrash style={{ marginRight: '5px', color:'gray'}} /> 
+                                    </button>
+
                                     </td>
                                 </tr>
                             ))}
@@ -104,6 +144,8 @@ const BookList = () => {
                     </table>
                 </div>
             </div>
+
+            <AddBook show={showAddModal} handleClose={() => setShowAddModal(false)} refreshBooks={refreshBooks} />
 
             {currentBook && (
                 <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
@@ -124,29 +166,50 @@ const BookList = () => {
                             <Form.Group controlId="formBookAuthor">
                                 <Form.Label>Author</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    as="select"
                                     name="author"
                                     value={currentBook.author || ''}
                                     onChange={handleChange}
-                                />
+                                >
+                                    <option value="">Select Author</option>
+                                    {authors.map(author => (
+                                        <option key={author.id} value={author.id}>
+                                            {author.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
                             </Form.Group>
                             <Form.Group controlId="formBookCategory">
                                 <Form.Label>Category</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    as="select"
                                     name="category"
                                     value={currentBook.category || ''}
                                     onChange={handleChange}
-                                />
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
                             </Form.Group>
                             <Form.Group controlId="formBookPublisher">
                                 <Form.Label>Publisher</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    as="select"
                                     name="publisher"
                                     value={currentBook.publisher || ''}
                                     onChange={handleChange}
-                                />
+                                >
+                                    <option value="">Select Publisher</option>
+                                    {publishers.map(publisher => (
+                                        <option key={publisher.id} value={publisher.id}>
+                                            {publisher.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
                             </Form.Group>
                             <Form.Group controlId="formBookPublishedDate">
                                 <Form.Label>Published Date</Form.Label>
