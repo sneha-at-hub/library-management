@@ -1,6 +1,6 @@
 <img width="1439" alt="image" src="https://github.com/user-attachments/assets/2cafa7ec-1a79-4efc-bc83-f6f32d4c12ff">
 
-# Library Management System - COMPLETE GUIDE FOR DJANGOREST AND REACT 
+# Library Management System - This documentation provides complete guide for installation and connection of djangoREST and react
 
 ## Overview
 
