@@ -99,7 +99,7 @@ const BookList = () => {
         <>
             <Sidebar />
             <div className="container my-5" style={{ marginLeft: '250px', marginRight: 'auto', maxWidth: '1190px' }}>
-                <h2 className="text-center mb-4">Book List</h2>
+                <h2 className=" mb-4">Book List</h2>
                 <Button variant="primary" onClick={() => setShowAddModal(true)}>
                     Add New Book
                 </Button>
@@ -129,7 +129,7 @@ const BookList = () => {
                                     <td>{book.isbn}</td>
                                     <td>{book.copies_available}</td>
                                     <td>
-                                    <button className="btn btn-info btn-sm" style={{ marginRight: '10px' , backgroundColor:'#007bff', color:'white', borderColor:'lightgray' }}>Details</button>
+                                    <button className="btn btn-info btn-sm" style={{ marginRight: '10px' , backgroundColor:'#003a79', color:'white', borderColor:'lightgray' }}>Details</button>
                                     <button className="btn btn-warning btn-sm" style={{ marginRight: '10px', padding:'0 5px 5px 5px' }} onClick={() => handleEdit(book)}>
                                         <FaEdit style={{ }} /> 
                                     </button>

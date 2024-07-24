@@ -5,8 +5,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: #343a40; /* Dark background for a modern look */
-    color: black;
+    background-color: #003a79; /* Dark background for a modern look */
+    color: white;
 
     transition: all 0.3s;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
@@ -14,7 +14,7 @@
 
 /* Header styling */
 .sidebar-header {
-    background: #007bff; /* Bright blue background */
+    background: #032f5d; /* Bright blue background */
     color: #ffffff; /* White text */
     padding: 15px 20px;
     text-align: center;
@@ -27,7 +27,7 @@
     padding: 10px 20px; /* Slightly increased padding */
     display: flex;
     align-items: center;
-    color: #040303; /* White text */
+    color: #ffffff; /* White text */
     text-decoration: none; /* Remove underlines */
     border-radius: 4px; /* Rounded corners */
     transition: background 0.3s, color 0.3s; /* Smooth transition */
@@ -62,6 +62,10 @@
 
 /* Optional: active link styling */
 .nav-link.active {
-    background: #007bff; /* Highlight active link with bright blue */
+    background: #003a79; /* Highlight active link with bright blue */
     color: #ffffff; /* White text for active link */
+}
+
+.nav-link i {
+    margin-left: -800px; /* Space between icon and text */
 }
