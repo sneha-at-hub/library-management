@@ -1,5 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from libraryapi.models import User, Student
 from libraryapi.serializers import UserSerializer, StudentSerializer
 
@@ -31,4 +33,11 @@ def create_user(request):
         return Response(serializer.data)
     else:
         return Response(serializer.errors)
+    
+
+@api_view(['DELETE'])
+def deleteUser(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user.delete()
+    return Response({"message": "User deleted successfully"}, status=status.HTTP_202_ACCEPTED)
     
