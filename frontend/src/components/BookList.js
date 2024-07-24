@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
 import Sidebar from './Sidebar';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
 import AddBook from './AddBook';
 
 const BookList = () => {
@@ -16,6 +15,9 @@ const BookList = () => {
     const [authors, setAuthors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [publishers, setPublishers] = useState([]);
+    const [authorMap, setAuthorMap] = useState({});
+    const [categoryMap, setCategoryMap] = useState({});
+    const [publisherMap, setPublisherMap] = useState({});
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -36,6 +38,22 @@ const BookList = () => {
                     axios.get('http://localhost:8000/api/category/'),
                     axios.get('http://localhost:8000/api/publisher/')
                 ]);
+
+                // Create maps for easy lookup
+                setAuthorMap(authorsRes.data.reduce((map, author) => {
+                    map[author.id] = `${author.first_name} ${author.last_name}`;
+                    return map;
+                }, {}));
+                setCategoryMap(categoriesRes.data.reduce((map, category) => {
+                    map[category.id] = category.name;
+                    return map;
+                }, {}));
+                setPublisherMap(publishersRes.data.reduce((map, publisher) => {
+                    map[publisher.id] = publisher.name;
+                    return map;
+                }, {}));
+                
+                // Set data
                 setAuthors(authorsRes.data);
                 setCategories(categoriesRes.data);
                 setPublishers(publishersRes.data);
@@ -104,7 +122,7 @@ const BookList = () => {
                     Add New Book
                 </Button>
                 <div className="table-responsive mt-4">
-                    <table className="table  ">
+                    <table className="table">
                         <thead className="thead-dark">
                             <tr>
                                 <th scope="col">Title</th>
@@ -117,26 +135,24 @@ const BookList = () => {
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
-                        
                         <tbody>
                             {books.map((book) => (
                                 <tr key={book.book_id}>
                                     <td>{book.title}</td>
-                                    <td>{book.author}</td>
-                                    <td>{book.category}</td>
-                                    <td>{book.publisher}</td>
+                                    <td>{authorMap[book.author] || book.author}</td>
+                                    <td>{categoryMap[book.category] || book.category}</td>
+                                    <td>{publisherMap[book.publisher] || book.publisher}</td>
                                     <td>{book.publication_year}</td>
                                     <td>{book.isbn}</td>
                                     <td>{book.copies_available}</td>
                                     <td>
-                                    <button className="btn btn-info btn-sm" style={{ marginRight: '10px' , backgroundColor:'#003a79', color:'white', borderColor:'lightgray' }}>Details</button>
-                                    <button className="btn btn-warning btn-sm" style={{ marginRight: '10px', padding:'0 5px 5px 5px' }} onClick={() => handleEdit(book)}>
-                                        <FaEdit style={{ }} /> 
-                                    </button>
-                                    <button className="btn btn-danger btn-sm" style = {{padding:'0 0px 5px 5px', backgroundColor:'white', borderColor:'lightgray'}} onClick={() => handleDelete(book.book_id)}>
-                                        <FaTrash style={{ marginRight: '5px', color:'gray'}} /> 
-                                    </button>
-
+                                        <button className="btn btn-info btn-sm" style={{ marginRight: '10px', backgroundColor:'#003a79', color:'white', borderColor:'lightgray' }}>Details</button>
+                                        <button className="btn btn-warning btn-sm" style={{ marginRight: '10px', padding:'0 5px 5px 5px' }} onClick={() => handleEdit(book)}>
+                                            <FaEdit /> 
+                                        </button>
+                                        <button className="btn btn-danger btn-sm" style={{ padding:'0 0px 5px 5px', backgroundColor:'white', borderColor:'lightgray'}} onClick={() => handleDelete(book.book_id)}>
+                                            <FaTrash style={{ marginRight: '5px', color:'gray'}} /> 
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -174,7 +190,7 @@ const BookList = () => {
                                     <option value="">Select Author</option>
                                     {authors.map(author => (
                                         <option key={author.id} value={author.id}>
-                                            {author.name}
+                                            {author.first_name} {author.last_name}
                                         </option>
                                     ))}
                                 </Form.Control>
@@ -211,8 +227,8 @@ const BookList = () => {
                                     ))}
                                 </Form.Control>
                             </Form.Group>
-                            <Form.Group controlId="formBookPublishedDate">
-                                <Form.Label>Published Date</Form.Label>
+                            <Form.Group controlId="formBookPublicationYear">
+                                <Form.Label>Publication Year</Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="publication_year"
