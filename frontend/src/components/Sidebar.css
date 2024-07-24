@@ -1,0 +1,66 @@
+/* Sidebar container */
+#sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #343a40; /* Dark background for a modern look */
+
+    transition: all 0.3s;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+/* Header styling */
+.sidebar-header {
+    background: #007bff; /* Bright blue background */
+    color: #ffffff; /* White text */
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 1.2em; /* Larger font size for the header */
+    font-weight: bold; /* Bold text */
+}
+
+/* Navigation links */
+.nav-link {
+    padding: 10px 20px; /* Slightly increased padding */
+    display: flex;
+    align-items: center;
+    color: #ffffff; /* White text */
+    text-decoration: none; /* Remove underlines */
+    border-radius: 4px; /* Rounded corners */
+    transition: background 0.3s, color 0.3s; /* Smooth transition */
+}
+
+/* Hover effect for nav links */
+.nav-link:hover {
+    background: #57a1f1; /* Darker background on hover */
+    color: #ffffff; /* Light text color on hover */
+}
+
+/* Dropdown toggle styling */
+.dropdown-toggle::after {
+    display: none; /* Hide the default dropdown indicator */
+}
+
+/* Collapse styling */
+.collapse {
+    margin-left: 20px; /* Indentation for submenus */
+}
+
+/* Unstyled list for the sidebar menu */
+.list-unstyled {
+    padding-left: 0;
+    margin: 0;
+}
+
+/* Styling for nested list items */
+.list-unstyled .nav-link {
+    padding: 10px 20px; /* Matching padding */
+}
+
+/* Optional: active link styling */
+.nav-link.active {
+    background: #007bff; /* Highlight active link with bright blue */
+    color: #ffffff; /* White text for active link */
+}
