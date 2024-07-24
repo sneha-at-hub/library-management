@@ -1,6 +1,6 @@
 <img width="1439" alt="image" src="https://github.com/user-attachments/assets/2cafa7ec-1a79-4efc-bc83-f6f32d4c12ff">
 
-# Library Management System
+# Library Management System - COMPLETE GUIDE FOR DJANGOREST AND REACT 
 
 ## Overview
 
@@ -15,6 +15,14 @@ This system enables users to perform CRUD (Create, Read, Update, Delete) operati
 ## What is React?
 
 [React](https://reactjs.org/) is a popular JavaScript library for building user interfaces, especially single-page applications where a responsive, dynamic user experience is essential. 
+
+## Cloning the Repository
+
+To clone this repository, use the following command:
+
+```bash
+[git clone https://github.com/yourusername/your-repository.git](https://github.com/sneha-at-hub/library-management.git)
+```
 
 ## Prerequisites
 
