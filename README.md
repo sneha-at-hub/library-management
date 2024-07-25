@@ -23,7 +23,7 @@ This system enables users to perform CRUD (Create, Read, Update, Delete) operati
 To clone this repository, use the following command:
 
 ```bash
-[git clone https://github.com/yourusername/your-repository.git](https://github.com/sneha-at-hub/library-management.git)
+git clone https://github.com/sneha-at-hub/library-management.git
 ```
 
 ## Prerequisites
