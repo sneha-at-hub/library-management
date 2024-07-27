@@ -9,11 +9,11 @@ import AuthorList from './components/AuthorList';
 import CategoryList from './components/CategoryList';
 import ReservationList from './components/ReservationList';
 import PublisherList from './components/PublisherList';
-
+import AdminHomePage from './components/AdminHomePage';
 function App() {
   return (
     <Routes>
-        <Route path="/" element={<Sidebar />} />
+        <Route path="/" element={<AdminHomePage />} />
         <Route path="/books" element={<BookList />} />
         <Route path="/borrowings" element={<BorrowingList />} />
         <Route path="/students" element={<StudentList />} />

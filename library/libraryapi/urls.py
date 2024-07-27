@@ -45,6 +45,11 @@ urlpatterns = [
    path('reservation/update/<int:pk>/', views.updateReservation, name="updateReservation"),
    path('reservation/<int:pk>/delete/', views.deleteReservation, name="deleteReservation"),
    
+    path('books/count/', views.count_books, name='count_books'),
+    path('authors/count/', views.count_authors, name='count_authors'),
+    path('categories/count/', views.count_categories, name='count_categories'),
+    path('publishers/count/', views.count_publishers, name='count_publishers'),
+    path('reservations/count/', views.count_reservations, name='count_reservations'),
    
    
 ]

@@ -1,10 +1,30 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from libraryapi.models import User, Student, Author, Category, Publisher, Book, Borrowing, Reservation
 from libraryapi.serializers import UserSerializer, StudentSerializer, AuthorSerializer, CategorySerializer, PublisherSerializer, BookSerializer, BorrowingSerializer, ReservationSerializer
 
+def count_books(request):
+    count = Book.objects.count()
+    return JsonResponse({'count': count})
+
+def count_authors(request):
+    count = Author.objects.count()
+    return JsonResponse({'count': count})
+
+def count_categories(request):
+    count = Category.objects.count()
+    return JsonResponse({'count': count})
+
+def count_publishers(request):
+    count = Publisher.objects.count()
+    return JsonResponse({'count': count})
+
+def count_reservations(request):
+    count = Reservation.objects.count()
+    return JsonResponse({'count': count})
 
 # Create your views here.
 
