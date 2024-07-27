@@ -230,7 +230,7 @@ const BookList = () => {
                             <Form.Group controlId="formBookPublicationYear">
                                 <Form.Label>Publication Year</Form.Label>
                                 <Form.Control
-                                    type="date"
+                                    type="text"
                                     name="publication_year"
                                     value={currentBook.publication_year || ''}
                                     onChange={handleChange}

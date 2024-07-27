@@ -75,14 +75,16 @@ const BorrowingList = () => {
             return;
         }
         try {
-            await axios.patch(`http://localhost:8000/api/borrowing/update/${currentBorrowing.id}`, currentBorrowing);
-            setBorrowings(borrowings.map(borrowing => borrowing.id === currentBorrowing.id ? currentBorrowing : borrowing));
+            const response = await axios.patch(`http://localhost:8000/api/borrowing/update/${currentBorrowing.id}`, currentBorrowing);
+            console.log('Response:', response.data); // Log the response for debugging
+            setBorrowings(borrowings.map(borrowing => borrowing.id === currentBorrowing.id ? response.data : borrowing));
             setShowEditModal(false);
         } catch (err) {
+            console.error('Error updating borrowing:', err);
             setError(err);
         }
     };
-
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setCurrentBorrowing(prevBorrowing => ({ ...prevBorrowing, [name]: value }));
