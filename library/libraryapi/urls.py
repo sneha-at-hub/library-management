@@ -40,9 +40,9 @@ urlpatterns = [
    path('borrowing/update/<int:pk>/', views.updateBorrowing, name="updateBorrowing"),
    path('borrowing/<int:pk>/delete/', views.deleteBorrowing, name="deleteBorrowing"),
    
-   path('reservation/create', views.createReservation, name="createReservation"),
+   path('reservation/create/', views.createReservation, name="createReservation"),
    path('reservation/', views.getReservation, name="getReservation"),
-   path('reservation/update/<int:pk>', views.updateReservation, name="updateReservation"),
+   path('reservation/update/<int:pk>/', views.updateReservation, name="updateReservation"),
    path('reservation/<int:pk>/delete/', views.deleteReservation, name="deleteReservation"),
    
    
