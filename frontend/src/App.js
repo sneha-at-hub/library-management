@@ -6,6 +6,7 @@ import BookList from './components/BookList';
 import StudentList from './components/StudentList';
 import BorrowingList from './components/BorrowingList';
 import AuthorList from './components/AuthorList';
+import CategoryList from './components/CategoryList';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/borrowings" element={<BorrowingList />} />
         <Route path="/students" element={<StudentList />} />
         <Route path="/authors" element={<AuthorList />} />
+        <Route path="/categories" element={<CategoryList />} />
     </Routes>
 
 
