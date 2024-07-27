@@ -13,7 +13,8 @@ const StudentList = () => {
     const [currentStudent, setCurrentStudent] = useState({
         user: '',
         phone_number: '',
-        address: ''
+        address: '',
+        membership_date: ''
     });
 
     useEffect(() => {
@@ -72,10 +73,14 @@ const StudentList = () => {
 
     const handleAddStudent = async () => {
         try {
-            await axios.post('http://localhost:8000/api/students/create/', currentStudent);
+            const newStudent = {
+                ...currentStudent,
+                membership_date: new Date().toISOString().split('T')[0] // Setting current date
+            };
+            await axios.post('http://localhost:8000/api/students/create/', newStudent);
             refreshStudents();
             setShowAddModal(false);
-            setCurrentStudent({ user: '', phone_number: '', address: '' });
+            setCurrentStudent({ user: '', phone_number: '', address: '', membership_date: '' });
         } catch (err) {
             setError(err);
         }

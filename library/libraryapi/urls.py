@@ -35,9 +35,9 @@ urlpatterns = [
    path('books/<int:pk>/delete/', views.deleteBooks, name="deleteBooks"),
    
    
-   path('borrowing/create', views.createBorrowing, name="createBorrowing"),
+   path('borrowing/create/', views.createBorrowing, name="createBorrowing"),
    path('borrowing/', views.getBorrowing, name="getBorrowing"),
-   path('borrowing/update/<int:pk>', views.updateBorrowing, name="updateBorrowing"),
+   path('borrowing/update/<int:pk>/', views.updateBorrowing, name="updateBorrowing"),
    path('borrowing/<int:pk>/delete/', views.deleteBorrowing, name="deleteBorrowing"),
    
    path('reservation/create', views.createReservation, name="createReservation"),

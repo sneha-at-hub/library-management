@@ -1,19 +1,24 @@
-// src/components/BorrowingList.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
+import Sidebar from './Sidebar';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const BorrowingList = () => {
     const [borrowings, setBorrowings] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [currentBorrowing, setCurrentBorrowing] = useState(null);
-    const [students, setStudents] = useState([]);
-    const [books, setBooks] = useState([]);
+    const [currentBorrowing, setCurrentBorrowing] = useState({
+        id: '',
+        student: '',
+        book: '',
+        borrowing_date: '',
+        return_date: ''
+    });
 
     useEffect(() => {
         const fetchBorrowings = async () => {
@@ -27,21 +32,27 @@ const BorrowingList = () => {
             }
         };
 
-        const fetchOptions = async () => {
+        const fetchStudents = async () => {
             try {
-                const [studentsRes, booksRes] = await Promise.all([
-                    axios.get('http://localhost:8000/api/students/'),
-                    axios.get('http://localhost:8000/api/books/')
-                ]);
-                setStudents(studentsRes.data);
-                setBooks(booksRes.data);
+                const response = await axios.get('http://localhost:8000/api/students/');
+                setStudents(response.data);
+            } catch (err) {
+                setError(err);
+            }
+        };
+
+        const fetchBooks = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/books/');
+                setBooks(response.data);
             } catch (err) {
                 setError(err);
             }
         };
 
         fetchBorrowings();
-        fetchOptions();
+        fetchStudents();
+        fetchBooks();
     }, []);
 
     const refreshBorrowings = async () => {
@@ -54,9 +65,9 @@ const BorrowingList = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this borrowing?')) {
+        if (window.confirm('Are you sure you want to delete this borrowing record?')) {
             try {
-                await axios.delete(`http://localhost:8000/api/borrowing/${id}/delete/`);
+                await axios.delete(`http://localhost:8000/api/borrowing/delete/${id}/`);
                 setBorrowings(borrowings.filter(borrowing => borrowing.id !== id));
             } catch (err) {
                 setError(err);
@@ -75,16 +86,36 @@ const BorrowingList = () => {
             return;
         }
         try {
-            const response = await axios.patch(`http://localhost:8000/api/borrowing/update/${currentBorrowing.id}`, currentBorrowing);
-            console.log('Response:', response.data); // Log the response for debugging
+            const response = await axios.patch(`http://localhost:8000/api/borrowing/update/${currentBorrowing.id}/`, currentBorrowing);
             setBorrowings(borrowings.map(borrowing => borrowing.id === currentBorrowing.id ? response.data : borrowing));
             setShowEditModal(false);
         } catch (err) {
             console.error('Error updating borrowing:', err);
-            setError(err);
+            setError(err.response?.data?.detail || 'An error occurred');
         }
     };
-    
+
+    const handleAddBorrowing = async () => {
+        try {
+            const newBorrowing = {
+                ...currentBorrowing,
+                borrowing_date: currentBorrowing.borrowing_date || new Date().toISOString().split('T')[0] // Set current date
+            };
+            const response = await axios.post('http://localhost:8000/api/borrowing/create/', newBorrowing);
+            setBorrowings([...borrowings, response.data]);
+            setShowAddModal(false);
+            setCurrentBorrowing({
+                student: '',
+                book: '',
+                borrowing_date: '',
+                return_date: ''
+            });
+        } catch (err) {
+            console.error('Error adding borrowing:', err);
+            setError(err.response?.data?.detail || 'An error occurred');
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setCurrentBorrowing(prevBorrowing => ({ ...prevBorrowing, [name]: value }));
@@ -95,8 +126,9 @@ const BorrowingList = () => {
 
     return (
         <>
-            <div className="container my-5">
-                <h2 className="text-center mb-4">Borrowing List</h2>
+            <Sidebar />
+            <div className="container my-5" style={{ marginLeft: '250px', marginRight: 'auto', maxWidth: '1190px' }}>
+                <h2 className="mb-4">Borrowing List</h2>
                 <Button variant="primary" onClick={() => setShowAddModal(true)}>
                     Add New Borrowing
                 </Button>
@@ -112,98 +144,158 @@ const BorrowingList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {borrowings.map((borrowing) => (
-                                <tr key={borrowing.id}>
-                                    <td>{borrowing.student}</td>
-                                    <td>{borrowing.book}</td>
-                                    <td>{borrowing.borrowing_date}</td>
-                                    <td>{borrowing.return_date}</td>
-                                    <td>
-                                        <button className="btn btn-warning btn-sm" onClick={() => handleEdit(borrowing)}>
-                                            <FaEdit />
-                                        </button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(borrowing.id)}>
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {borrowings.map((borrowing) => {
+                                const student = students.find(s => s.library_id === borrowing.student) || {};
+                                const book = books.find(b => b.book_id === borrowing.book) || {};
+                                return (
+                                    <tr key={borrowing.id}>
+                                        <td>{student.user || 'Unknown Student'}</td>
+                                        <td>{book.title || 'Unknown Book'}</td>
+                                        <td>{borrowing.borrowing_date}</td>
+                                        <td>{borrowing.return_date || 'Not Returned'}</td>
+                                        <td>
+                                            <button className="btn btn-warning btn-sm" style={{ marginRight: '10px' }} onClick={() => handleEdit(borrowing)}>
+                                                <FaEdit />
+                                            </button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(borrowing.id)}>
+                                                <FaTrash />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Add Borrowing Modal */}
             <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Borrowing</Modal.Title>
+                    <Modal.Title>Add New Borrowing</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* Add form for creating a new borrowing */}
+                    <Form>
+                        <Form.Group controlId="formStudent">
+                            <Form.Label>Student</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="student"
+                                value={currentBorrowing.student}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Student</option>
+                                {students.map(student => (
+                                    <option key={student.library_id} value={student.library_id}>
+                                        {student.user}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="formBook">
+                            <Form.Label>Book</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="book"
+                                value={currentBorrowing.book}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Book</option>
+                                {books.map(book => (
+                                    <option key={book.book_id} value={book.book_id}>
+                                        {book.title}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="formBorrowingDate">
+                            <Form.Label>Borrowing Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="borrowing_date"
+                                value={currentBorrowing.borrowing_date}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formReturnDate">
+                            <Form.Label>Return Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="return_date"
+                                value={currentBorrowing.return_date}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Form>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowAddModal(false)}>Close</Button>
-                    <Button variant="primary">Save Changes</Button>
+                    <Button variant="primary" onClick={handleAddBorrowing}>Save Borrowing</Button>
                 </Modal.Footer>
             </Modal>
 
-            {/* Edit Borrowing Modal */}
-            {currentBorrowing && (
-                <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Edit Borrowing</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form>
-                            <Form.Group controlId="formBorrowingStudent">
-                                <Form.Label>Student</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="student"
-                                    value={currentBorrowing.student || ''}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Student</option>
-                                    {students.map(student => (
-                                        <option key={student.id} value={student.id}>
-                                            {student.user}
-                                        </option>
-                                    ))}
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group controlId="formBorrowingBook">
-                                <Form.Label>Book</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="book"
-                                    value={currentBorrowing.book || ''}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Book</option>
-                                    {books.map(book => (
-                                        <option key={book.id} value={book.id}>
-                                            {book.title}
-                                        </option>
-                                    ))}
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group controlId="formBorrowingReturnDate">
-                                <Form.Label>Return Date</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    name="return_date"
-                                    value={currentBorrowing.return_date || ''}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowEditModal(false)}>Close</Button>
-                        <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button>
-                    </Modal.Footer>
-                </Modal>
-            )}
+            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Borrowing</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="formStudent">
+                            <Form.Label>Student</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="student"
+                                value={currentBorrowing.student}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Student</option>
+                                {students.map(student => (
+                                    <option key={student.library_id} value={student.library_id}>
+                                        {student.user}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="formBook">
+                            <Form.Label>Book</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="book"
+                                value={currentBorrowing.book}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Book</option>
+                                {books.map(book => (
+                                    <option key={book.book_id} value={book.book_id}>
+                                        {book.title}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="formBorrowingDate">
+                            <Form.Label>Borrowing Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="borrowing_date"
+                                value={currentBorrowing.borrowing_date}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formReturnDate">
+                            <Form.Label>Return Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="return_date"
+                                value={currentBorrowing.return_date}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowEditModal(false)}>Close</Button>
+                    <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };
