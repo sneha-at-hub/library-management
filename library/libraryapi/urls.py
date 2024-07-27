@@ -25,7 +25,7 @@ urlpatterns = [
    
    
    path('publisher/create/', views.createPublisher, name="createPublisher"),
-   path('publisher/update/<int:pk>', views.updatePublisher, name="updatePublisher"),
+   path('publisher/update/<int:pk>/', views.updatePublisher, name="updatePublisher"),
    path('publisher/', views.getPublisher, name="getPublisher"),
    path('publisher/<int:pk>/delete/', views.deletePublisher, name="deletePublisher"),
    
