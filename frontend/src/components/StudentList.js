@@ -44,7 +44,7 @@ const StudentList = () => {
     const handleDelete = async (library_id) => {
         if (window.confirm('Are you sure you want to delete this student?')) {
             try {
-                await axios.delete(`http://localhost:8000/api/students/delete/${library_id}/`);
+                await axios.delete(`http://localhost:8000/api/students/${library_id}/delete/`);
                 setStudents(students.filter(student => student.library_id !== library_id));
             } catch (err) {
                 setError(err);
